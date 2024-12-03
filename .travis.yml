@@ -1,0 +1,32 @@
+
+language: python
+python: "3.11"
+
+# Install dependencies
+install: pip install lektor
+
+# Set environment variables
+env: lektor_SECRET_KEY="your_secre_key"
+
+# Run the tests and build the lektor site
+script: lektor build
+
+# Deployment settings
+before_deploy:
+  # Prepare the deployment environment: Set up SSH
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" > ~/.ssh/Id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - ssh-keyscan -H iad1-shared-b7-38.dreamhost.com >> ~/.ssh/known_hosts
+
+deploy:
+  provider: script
+  script: ./deploy.sh
+  on:
+    branch: main
+
+#Notifications
+notifications:
+  email:
+    on_success: never
+    on_failure: always
